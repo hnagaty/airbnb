@@ -1,0 +1,18 @@
+---
+title: "Airbnb"
+author: "Hany Nagaty"
+date: "October 10, 2018"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+### Some Notes
+Should map the language between countries & training
+Should use the date (season)
+Associating the device type with action & with secs elapsed
+Use another scaling for the days_book_signup (check applied book by Max Kuhn)
+
+
