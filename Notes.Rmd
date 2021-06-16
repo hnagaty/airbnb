@@ -1,0 +1,88 @@
+---
+title: "Notes"
+author: "Hany Nagaty"
+date: "25/07/2020"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Notes
+### I want to try
+1. Using XGBoost interface
+2. Other classifiers (Naive Bayes, LR or SVM)
+3. Using `tidymodels` -- DONE
+4. Model importance. Check the `vip` package. -- DONE
+5. A framework for trying, comparing & saving various models (refer to the clustering I did on GSM MRR)
+6. Custom metric with yardstick (check the below guide)
+7. Use the `caret::confusionMatrix()`, as it gives more details and metrics
+8. The DART booster
+9. Categorical feature embedding using the `embed` library.
+10. Ensemble model
+11. Use LIME
+12. Use UMAP
+13. **Anomally detection**, either uni-variate or multi-variate, should be a part of the EDA.
+
+
+### Read this
+https://workflows.tidymodels.org/articles/extras/getting-started.html  
+and this https://rsample.tidymodels.org/articles/Working_with_rsets.html  
+How to make custom metrics with `yardstick`  https://yardstick.tidymodels.org/articles/custom-metrics.html  
+The page on `tunes` has many useful resources & links, including links about the **Baysesian optimisation**. 
+
+
+**LightGBM** can be used in **parsnip** via the package at https://github.com/curso-r/treesnip.  
+*this seems not be be a yet official package of the tidymodels, however I found some bug reports by Max Kuhn, so it seems the package is in their circle of concern and might be integrated in the future into tidymodels.  
+
+Learn how to use the parallel backend in R & tidymodels. I don't know if it is used by default or if I should enable it explicitly.
+
+
+
+Cluster the destinations to similar countries, then predict which cluster is the destination.
+Split the problem to NDF vs non-NDF, then predict the destination for non NDF. This is good as a practice for two class classification.
+Make use of (booking data - signup date), try different settings for current date
+Think of more feature engineering
+
+Use GPU in XGBoost
+Reproduce tidymodel results with caret; check the model parameters and use them directly.
+
+
+Plot, explore model performance with various hyper-parameters. This may help to tune the hyper-parameters. Caret had something that could help with this I guess.
+
+There is no need for cross validation; a normal validation is enough, as I have plenty of data
+
+
+### Learnt Lessons
+Caret adaptive resampling sometimes is good and other times is not good. It worked well with tuneLength of 32, but when I increased the tuneLength to 64 & 128, it gave inferior results. Not using it gives better results, but is considerably slower.
+
+
+## Bug or inquiry
+When using `step_naommit()` in the recipe, I don't know which rows are removed when I do a prediction. So, I can't know which row gave which prediction (because some rows are removed and I don't know what are the removed ones).
+
+
+## TODO after visualisation
+#### In feature engineering
++ Lump device_type and action_detail into others
++ Re-check the logic of the sessions features. Is this right? Most of values is 0, should I exclude them?
++ Try log-transformation to numeric values
++ Try not using center & scaling
+
+### For data exploreration
++ Clustering
++ PCA
+
+### Tricks to try
++ Classification of destination countries
++ Induce destination from binary classifier
++ Two step model, a binary classifier followed by a country classifier
+
+### For sake of learning R
++ make the cross_list a class, and create a print method that prints the names of recipe, clf & count of grid objects. Others methods could include `add` & `remove`
++ Modify the `TuneFitModel()` function to reserve its state. This state should be the count of numbers it was run.
+
+### In the Full Framework File
++ Add Kaggle predictions
+
+

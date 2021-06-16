@@ -1,7 +1,6 @@
 library(anytime) # to extract date from timestamp
 library(hydroTSM) # I use this to extract the season from the date
-library(dplyr)
-library(ggplot2)
+
 
 allUsers <- bind_rows(trainUsersRaw,testUsersRaw)
 #allUsers <- trainUsersRaw
@@ -116,3 +115,6 @@ for (x in factCols) {
 }
 rm(asData,x)
 summary(allUsers)
+
+write_csv(allUsersExpanded, "mungedData.csv")
+save(allUsersExpanded, file = 'allUsers.RData')

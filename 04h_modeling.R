@@ -4,9 +4,7 @@
 library(caret)
 library(ROSE)
 library(xgboost)
-library(dplyr)
 library(StatRank)
-
 
 trainData <- allUsersExpanded %>%
   filter(dataset=="train") %>%
@@ -39,13 +37,13 @@ trainSplitProcResampled <- upSample(x = trainSplitProc[, -ncol(trainSplitProc)],
                      y = trainSplitProc$country_destination)                         
 table(trainSplitProcResampled$country_destination) 
 
-myControl <- trainControl(method = "cv",  number = 2,
+myControl <- trainControl(method = "cv",  number = 10,
                           classProbs = TRUE,
                           verboseIter = TRUE)
 
 myGrid <- expand.grid( # ==> single parameter to speed up. Should be multi grid to explore hyper-parameters
-  eta=0.3,
-  max_depth = 3,
+  eta=0.6,
+  max_depth=6,
   gamma=0,
   colsample_bytree=0.8,
   min_child_weight=1,
@@ -61,8 +59,8 @@ xgboost.fit <- train(country_destination~.,
                     #preProcess=c("medianImpute","zv","nzv"),
                     tuneGrid=myGrid)
 
-save(xgboost.fit,file="xgBoostMultiExpandFeaturesWithResampling.RData")
-load("xgBoostMultiExpandFeaturesWithResampling.RData",verbose = TRUE)
+save(xgboost.fit,file="xgBoostMultiExpandFeaturesWithResamplingII_202005.RData")
+load("xgBoostMultiExpandFeaturesWithResampling.RData_202005",verbose = TRUE)
 
 
 print(xgboost.fit)
@@ -114,27 +112,36 @@ Evaluation.NDCG(forScoring$EstScore,forScoring$actualScore)
 
 # Kaggle test set ---------------------------------------------------------
 
+load("models/xgBoostMultiExpandFeaturesWithResampling.RData",verbose = TRUE)
+
 testData <- allUsersExpanded %>%
   filter(dataset=="test") %>%
   select(-age,-days_book_signup,-dataset,-made_booking,-destination_language,
-         -lat_destination,-distance_km,-book_month,-book_season)
-userIds <- testData$id
+         -lat_destination,-distance_km,-book_month,-book_season,-country_destination)
 testData <- select(testData,-id)
+
 summary(testData)
 
-predictions <- predict(xgboost.fit,testData,type = "prob")
+testData <- testData[!duplicated(testData$id),]
+testData <- testData[!is.na(testData$avgSecs),]
+
+
+predictions <- predict(xgboost.fit,testData2,type = "prob",verbose=TRUE)
 str(predictions)
+userIds <- testData$id
 testUserIds <- data.frame(userIds,stringsAsFactors = FALSE)
 
-topPrediction <- bind_cols(testUserIds,predictions) %>%
-  gather("Destination","Prob",3:14) %>%
+topPrediction <- bind_cols(testUserIds,predictions) %>% 
+  gather("Destination","Prob",2:13) %>%
   rename(UserID=userIds) %>%
-  group_by(UserID,testLabels) %>%
+  group_by(UserID) %>%
   arrange (UserID,desc(Prob)) %>%
   top_n(5,Prob) %>%
   mutate(pcnt=Prob/sum(Prob),cumPcnt=cumsum(pcnt)) %>%
   arrange (UserID,desc(Prob)) %>%
   filter (cumPcnt<0.85) %>%
   mutate(EstScore=dense_rank(desc(Prob))) %>%
-  ungroup
+  ungroup %>%
+  select(UserID,Destination)
 
+write_csv(topPrediction,"kaggleout.csv")

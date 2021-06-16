@@ -89,7 +89,7 @@ trainUsers %>%
 
 sum(trainUsers$days_book_signup<0,na.rm=TRUE) # few (only 29) observations are less than 0
 
-13.4+12.7+8.9
+13.4 + 12.7 + 8.9
 # Others ------------------------------------------------------------------
 
 trainUsers<- trainUsers %>%

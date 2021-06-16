@@ -1,11 +1,11 @@
 library(tidyverse)
 
-
 dataPath <- "/home/hnagaty/dataNAS/airbnb/"
 
 # Train Users  --------------------------------------------------------
-trainUsersRaw <- read_csv(paste0(dataPath, "train_users_2.csv"),
-                       col_types = cols(id = col_character(),
+trainUsersRaw <- read_csv("data/train_users_2.csv",
+                       col_types = cols(
+                         id = col_character(),
                          date_account_created = col_date(format = "%Y-%m-%d"),
                          timestamp_first_active = col_character(),
                          date_first_booking = col_date(format = "%Y-%m-%d"),
@@ -37,7 +37,7 @@ levels(trainUsersRaw$first_browser) <- append(levels(trainUsersRaw$first_browser
 levels(trainUsersRaw$signup_method) <- append(levels(trainUsersRaw$signup_method),"weibo")
 levels(trainUsersRaw$signup_flow) <- append(levels(trainUsersRaw$language),c("14","0","25","8","23","12","21"))
 
-testUsersRaw <- read_csv(paste0(dataPath, "test_users.csv"),
+testUsersRaw <- read_csv("data/test_users.csv",
                           col_types = cols(
                             id = col_character(),
                             date_account_created = col_date(format = "%Y-%m-%d"),
@@ -62,7 +62,7 @@ testUsersRaw$dataset <- "test"
 # Countries ---------------------------------------------------------------
 
 # I edited the language in countries.csv by hand, to match the same naming of training data
-countries <- read_csv(paste0(dataPath, "countries.csv"),
+countries <- read_csv("data/countries.csv",
                       col_types = cols(
                         country_destination = col_factor(levels=levels(trainUsersRaw$country_destination),ordered = FALSE, include_na = FALSE),
                         lat_destination = col_double(),
@@ -77,7 +77,7 @@ summary(countries)
 countries
 
 # Age Buckets -------------------------------------------------------------
-ageBuckets <- read_csv(paste0(dataPath,"age_gender_bkts.csv"),
+ageBuckets <- read_csv("data/age_gender_bkts.csv",
                        col_types = cols(
                          age_bucket = col_character(),
                          country_destination = col_factor(levels = levels(trainUsersRaw$country_destination)),
@@ -92,7 +92,7 @@ ageBuckets
 
 # Sessions ----------------------------------------------------------------
 
-sessions <- read_csv(paste0(dataPath,"sessions.csv"),
+sessions <- read_csv("data/sessions.csv",
                      col_types = cols(
                        user_id = col_character(),
                        action = col_factor(levels = NULL, ordered = FALSE, include_na = TRUE),
